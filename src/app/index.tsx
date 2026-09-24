@@ -1,98 +1,156 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View, StyleSheet} from "react-native";
+import { getMeteo } from "@/app/api/meteo/meteoApi"
+import { mapMeteoListResponseToDays } from "@/app/mappers/meteoMapper";
+import { Day } from "@/app/types/types";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+export default function WeatherScreen() {
+  const [days, setDays] = useState<Day[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
+  useEffect(() => {
+    // Exemple pour Québec
+    getMeteo(46.8139, -71.2080)
+      .then((data) => {
+        const formattedDays = mapMeteoListResponseToDays(data);
+        setDays(formattedDays);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return (
+    <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+    </View>
+  )
+
+return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Prévisions</Text>
+
+      <FlatList
+        data={days}
+        keyExtractor={(item) => item.date}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.dayName}>{item.name}</Text>
+
+            <View style={styles.tempRow}>
+              <View style={styles.tempBlock}>
+                <Text style={styles.tempLabel}>Min</Text>
+                <Text style={styles.tempMin}>
+                  {item.meteo_data.tempMin}
+                  {item.meteo_data.unit}
+                </Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.tempBlock}>
+                <Text style={styles.tempLabel}>Max</Text>
+                <Text style={styles.tempMax}>
+                  {item.meteo_data.tempMax}
+                  {item.meteo_data.unit}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+      />
+    </View>
+  )
 }
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
+//Css 100% par IA 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+  },
+
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "#F8FAFC", // fond très clair et doux
+    paddingHorizontal: 20,
+    paddingTop: 16,
   },
-  safeArea: {
+
+  header: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#1E293B",
+    marginBottom: 20,
+    letterSpacing: -0.5,
+  },
+
+  listContent: {
+    paddingBottom: 30,
+  },
+
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    marginBottom: 14,
+    
+    // Ombre douce et moderne
+    shadowColor: "#64748B",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 5,
+
+    // Petite bordure très légère
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+  },
+
+  dayName: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#334155",
+    marginBottom: 14,
+  },
+
+  tempRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+
+  tempBlock: {
+    alignItems: "center",
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+
+  tempLabel: {
+    fontSize: 13,
+    color: "#94A3B8",
+    marginBottom: 4,
+    fontWeight: "500",
   },
-  title: {
-    textAlign: 'center',
+
+  tempMin: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#3B82F6", // bleu frais pour le min
   },
-  code: {
-    textTransform: 'uppercase',
+
+  tempMax: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#F97316", // orange pour le max
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  divider: {
+    width: 1,
+    height: 36,
+    backgroundColor: "#E2E8F0",
   },
 });
