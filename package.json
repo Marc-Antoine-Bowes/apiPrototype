@@ -1,5 +1,6 @@
 {
   "name": "api-prototype",
+  "homepage": "https://marc-antoine-bowes.github.io/apiPrototype",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
