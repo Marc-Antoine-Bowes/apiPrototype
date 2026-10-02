@@ -10,22 +10,27 @@ export default function WeatherScreen() {
   const [days, setDays] = useState<Day[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
-  const today = new Date();
-
+  
   useEffect(() => {
     // Exemple pour Québec
     getMeteo(46.8139, -71.2080)
-      .then((data) => {
-        const formattedDays = mapMeteoListResponseToDays(data);
-        setDays(formattedDays);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    .then((data) => {
+      const formattedDays = mapMeteoListResponseToDays(data);
+      setDays(formattedDays);
+    })
+    .catch((err) => console.error(err))
+    .finally(() => setLoading(false));
   }, []);
-
+  
   function getCurrentDay() {
-    const nameOfTheDay =  today.toLocaleDateString('fr-FR', { weekday: 'long' });
-    const day = days.find(u => u.name == nameOfTheDay)
+    const today = new Date();
+    const nameOfTheDay = today
+      .toLocaleDateString("fr-FR", { weekday: "long" })
+      .toLowerCase();
+
+    const day = days.find(
+      (d) => d.name.toLowerCase() === nameOfTheDay
+    );
 
     return day;
   }
