@@ -4,11 +4,13 @@ import { Day } from "@/types/types";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import DayCard from "@/components/day";
 
 export default function WeatherScreen() {
   const [days, setDays] = useState<Day[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const today = new Date();
 
   useEffect(() => {
     // Exemple pour Québec
@@ -21,6 +23,13 @@ export default function WeatherScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  function getCurrentDay() {
+    const nameOfTheDay =  today.toLocaleDateString('fr-FR', { weekday: 'long' });
+    const day = days.find(u => u.name == nameOfTheDay)
+
+    return day;
+  }
+
   if (loading) return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size="large" color="#3B82F6" />
@@ -31,46 +40,14 @@ export default function WeatherScreen() {
     <View style={styles.container}>
       <Text style={styles.header}>Prévisions</Text>
 
+      {getCurrentDay() ? (
+        <DayCard item={getCurrentDay()!} isCurrent />
+      ) : null}
+
       <FlatList
         data={days}
         keyExtractor={(item) => item.date}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() =>
-              router.push({
-                pathname: "/[name]",
-                params: { name: item.name, date: item.date },
-              })
-            }
-          >
-            <View style={styles.card}>
-              <Text style={styles.dayName}>{item.name}</Text>
-
-              <View style={styles.tempRow}>
-                <View style={styles.tempBlock}>
-                  <Text style={styles.tempLabel}>Min</Text>
-                  <Text style={styles.tempMin}>
-                    {item.meteo_data.tempMin}
-                    {item.meteo_data.unit}
-                  </Text>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.tempBlock}>
-                  <Text style={styles.tempLabel}>Max</Text>
-                  <Text style={styles.tempMax}>
-                    {item.meteo_data.tempMax}
-                    {item.meteo_data.unit}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <DayCard item={item} />}
       />
     </View>
   );
