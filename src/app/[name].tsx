@@ -4,6 +4,7 @@ import { Hour } from "@/types/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import HourRow from "@/components/hour";
 
 export default function HourlyWeatherScreen() {
   const { name, date } = useLocalSearchParams<{ name: string; date: string }>();
@@ -40,19 +41,14 @@ export default function HourlyWeatherScreen() {
 
       <Text style={styles.header}>{name ?? "Détail de la journée"}</Text>
       <Text style={styles.subHeader}>{date}</Text>
-
+      
       <FlatList
         data={hours}
         keyExtractor={(item) => item.time}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View style={styles.hourRow}>
-            <Text style={styles.timeLabel}>{item.label}</Text>
-            <Text style={styles.tempText}>
-              {item.meteo_data.temp} {item.meteo_data.unit}
-            </Text>
-          </View>
+          <HourRow key={item.label} item={item} />
         )}
       />
     </View>
