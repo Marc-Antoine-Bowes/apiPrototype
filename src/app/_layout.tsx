@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
-
-export default function RootLayout() {
+import { MeteoContextProvider } from "@/contexts/MeteoContext";
+function MainLayout() {
   return (
     <Stack
       screenOptions={{
@@ -14,16 +14,24 @@ export default function RootLayout() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen 
-        name="index" 
-        options={{ title: "Accueil" }} 
-      />
-      <Stack.Screen 
-        name="[name]" 
-        options={({ route }) => ({
-          title: (route.params as { name?: string })?.name ?? "Détail de la journée",
-        })} 
-      />
+    <Stack.Screen
+      name="index"
+      options={{ title: "Accueil" }}
+    />
+    <Stack.Screen
+      name="[name]"
+      options={({ route }) => ({
+        title: (route.params as { name?: string })?.name ?? "Détail de la journée",
+      })}
+    />
     </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <MeteoContextProvider>
+      <MainLayout/>
+    </MeteoContextProvider>
   );
 }

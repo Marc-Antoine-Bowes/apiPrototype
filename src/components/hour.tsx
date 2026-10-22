@@ -1,26 +1,41 @@
-// components/HourRow.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { getWeatherIcon } from "@/utils/weatherIcons";
 
 type HourData = {
   label: string;
   meteo_data: {
     temp: number | string;
     unit: string;
+    weatherCode: number;
   };
 };
 
 type HourRowProps = {
   item: HourData;
-  isCurrent?: boolean; // optionnel si tu veux highlighter l'heure actuelle
+  isCurrent?: boolean;
 };
 
 export default function HourRow({ item, isCurrent = false }: HourRowProps) {
+  const { name: iconName, color: iconColor } = getWeatherIcon(
+    item.meteo_data.weatherCode
+  );
+
   return (
     <View style={[styles.hourRow, isCurrent && styles.currentHourRow]}>
-      <Text style={[styles.timeLabel, isCurrent && styles.currentText]}>
-        {item.label}
-      </Text>
+      <View style={styles.left}>
+        <Ionicons
+          name={iconName}
+          size={22}
+          color={iconColor}
+          style={{ marginRight: 12 }}
+        />
+        <Text style={[styles.timeLabel, isCurrent && styles.currentText]}>
+          {item.label}
+        </Text>
+      </View>
+
       <Text style={[styles.tempText, isCurrent && styles.currentTemp]}>
         {item.meteo_data.temp}
         {item.meteo_data.unit}
@@ -51,6 +66,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFF6FF",
     borderColor: "#3B82F6",
     borderWidth: 1.5,
+  },
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   timeLabel: {
     fontSize: 16,

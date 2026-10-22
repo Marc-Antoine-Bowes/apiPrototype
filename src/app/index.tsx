@@ -1,26 +1,9 @@
-import { getMeteo } from "@/api/meteo/meteoApi";
-import { mapMeteoListResponseToDays } from "@/mappers/meteoMapper";
-import { Day } from "@/types/types";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import DayCard from "@/components/day";
+import { useMeteo } from "@/Hooks/useMeteo";
 
 export default function WeatherScreen() {
-  const [days, setDays] = useState<Day[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const router = useRouter();
-  
-  useEffect(() => {
-    // Exemple pour Québec
-    getMeteo(46.8139, -71.2080)
-    .then((data) => {
-      const formattedDays = mapMeteoListResponseToDays(data);
-      setDays(formattedDays);
-    })
-    .catch((err) => console.error(err))
-    .finally(() => setLoading(false));
-  }, []);
+  const {days, loading } = useMeteo()
   
   function getCurrentDay() {
     const today = new Date();

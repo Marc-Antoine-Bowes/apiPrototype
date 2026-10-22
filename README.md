@@ -12,3 +12,9 @@ Sources pour le code :
 * [MDN Web Docs - Fetch API](https://developer.mozilla.org/fr/docs/Web/API/Fetch_API?utm_source=gemini) : Documentation de l'API
 
 # apiPrototype
+Packages à installer : 
+
+- npx expo install @react-native-async-storage/async-storage
+
+Lien pour le code du AsyncStorage avec expiration :
+[AsyncStorage expiration](https://dev.to/pierre/expiry-tine-react-native-asyncstorage-371l)

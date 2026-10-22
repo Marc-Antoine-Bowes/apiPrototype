@@ -1,31 +1,19 @@
-import { getMeteoHours } from "@/api/meteo/meteoApi";
-import { mapMeteoListResponseToHours } from "@/mappers/meteoMapper";
-import { Hour } from "@/types/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HourRow from "@/components/hour";
+import { useMeteo } from "@/Hooks/useMeteo";
 
 export default function HourlyWeatherScreen() {
+  const {hours, loadHours,  hoursloading} = useMeteo()
   const { name, date } = useLocalSearchParams<{ name: string; date: string }>();
-  const [hours, setHours] = useState<Hour[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (date) {
-      // Coordonnées de Québec
-      getMeteoHours(46.8139, -71.2080, date)
-        .then((data) => {
-          const formattedHours = mapMeteoListResponseToHours(data);
-          setHours(formattedHours);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
+    loadHours(date)
   }, [date]);
 
-  if (loading) {
+  if (hoursloading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3B82F6" />

@@ -1,15 +1,20 @@
-// components/DayCard.tsx
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { Day } from "@/types/types";
+import { getWeatherIcon } from "@/utils/weatherIcons";
 
 type DayCardProps = {
   item: Day;
-  isCurrent?: boolean; // ← nouveau
+  isCurrent?: boolean;
 };
 
 export default function DayCard({ item, isCurrent = false }: DayCardProps) {
+  const { name: iconName, color: iconColor } = getWeatherIcon(
+    item.meteo_data.weatherCode
+  );
+
   const handlePress = () => {
     router.push({
       pathname: "/[name]",
@@ -26,9 +31,12 @@ export default function DayCard({ item, isCurrent = false }: DayCardProps) {
           </View>
         )}
 
-        <Text style={[styles.dayName, isCurrent && styles.currentDayName]}>
-          {item.name}
-        </Text>
+        <View style={styles.headerRow}>
+          <Text style={[styles.dayName, isCurrent && styles.currentDayName]}>
+            {item.name}
+          </Text>
+          <Ionicons name={iconName} size={28} color={iconColor} />
+        </View>
 
         <View style={styles.tempRow}>
           <View style={styles.tempBlock}>
@@ -69,10 +77,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#F1F5F9",
   },
-
-  // Style spécial pour le jour actuel
   currentCard: {
-    backgroundColor: "#EFF6FF", // bleu très clair
+    backgroundColor: "#EFF6FF",
     borderColor: "#3B82F6",
     borderWidth: 2,
     shadowColor: "#3B82F6",
@@ -80,7 +86,6 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
-
   badge: {
     alignSelf: "flex-start",
     backgroundColor: "#3B82F6",
@@ -94,18 +99,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 14,
+  },
   dayName: {
     fontSize: 18,
     fontWeight: "600",
     color: "#334155",
-    marginBottom: 14,
   },
   currentDayName: {
     color: "#1E40AF",
     fontWeight: "700",
   },
-
   tempRow: {
     flexDirection: "row",
     alignItems: "center",

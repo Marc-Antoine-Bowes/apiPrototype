@@ -64,3 +64,21 @@ export interface Day {
 }
 
 export const Days : Day[] = [];
+
+export interface DayWithHours {
+  day: Day
+  hours: Hour[];
+}
+
+export interface localData {
+  daysWithHours: DayWithHours[]
+  expiryTime: number
+}
+
+export interface MeteoContextType {
+    days: Day[];
+    hours: Hour[];
+    loading: boolean;
+    hoursloading: boolean;
+    loadHours: (date: string) => void;
+}
