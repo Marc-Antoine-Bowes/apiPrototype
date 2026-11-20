@@ -6,6 +6,9 @@ import { getWeatherIcon } from "@/utils/weatherIcons";
 type HourData = {
   label: string;
   meteo_data: {
+    humidity: string;
+    uvIndex: string;
+    aqi: string;
     temp: number | string;
     unit: string;
     weatherCode: number;
@@ -25,21 +28,24 @@ export default function HourRow({ item, isCurrent = false }: HourRowProps) {
   return (
     <View style={[styles.hourRow, isCurrent && styles.currentHourRow]}>
       <View style={styles.left}>
-        <Ionicons
-          name={iconName}
-          size={22}
-          color={iconColor}
-          style={{ marginRight: 12 }}
-        />
+        <Ionicons name={iconName} size={22} color={iconColor} style={{ marginRight: 12 }} />
         <Text style={[styles.timeLabel, isCurrent && styles.currentText]}>
           {item.label}
         </Text>
       </View>
 
-      <Text style={[styles.tempText, isCurrent && styles.currentTemp]}>
-        {item.meteo_data.temp}
-        {item.meteo_data.unit}
-      </Text>
+      <View style={styles.right}>
+        <Text style={[styles.tempText, isCurrent && styles.currentTemp]}>
+          {item.meteo_data.temp}{item.meteo_data.unit}
+        </Text>
+        <Text style={styles.meta}>
+          💧 {item.meteo_data.humidity ?? "–"}%
+          {"  "}
+          ☀️ UV {item.meteo_data.uvIndex ?? "–"}
+          {"  "}
+          AQI {item.meteo_data.aqi ?? "–"}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -62,6 +68,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  right: { alignItems: "flex-end" },
+  meta: { fontSize: 12, color: "#94A3B8", marginTop: 4 },
   currentHourRow: {
     backgroundColor: "#EFF6FF",
     borderColor: "#3B82F6",

@@ -31,6 +31,7 @@ export interface MeteoHourlyListResponse {
     temperature_2m: number[];
     weathercode: number[];
     relative_humidity_2m?: number[];
+    uv_index?: number[];
   };
   hourly_units: {
     temperature_2m: string;
@@ -39,13 +40,17 @@ export interface MeteoHourlyListResponse {
   };
 }
 
+
 export interface Hour {
-  time: string; // Ex: "2026-09-27T14:00"
-  label: string; // Ex: "14:00"
+  time: string;
+  label: string;
   meteo_data: {
     temp: number;
     weatherCode: number;
     humidity?: number;
+    uvIndex?: number;
+    aqi?: number;        
+    pm25?: number;
     unit: string;
   };
 }
@@ -78,7 +83,31 @@ export interface localData {
 export interface MeteoContextType {
     days: Day[];
     hours: Hour[];
+    hoursByDate: HoursByDate;
     loading: boolean;
     hoursloading: boolean;
     loadHours: (date: string) => void;
+    locationError: string | null;
+}
+
+// Nouveau type
+export interface AirQualityResponse {
+  latitude: number;
+  longitude: number;
+  hourly: {
+    time: string[];
+    pm10?: number[];
+    pm2_5?: number[];
+    european_aqi?: number[];
+    us_aqi?: number[];
+  };
+}
+
+export type HoursByDate = Record<string, Hour[]>;
+
+export interface CachedMeteo {
+  expiryTime: number; // timestamp en ms
+  coordsKey: string;
+  days: Day[];
+  hoursByDate: HoursByDate;
 }

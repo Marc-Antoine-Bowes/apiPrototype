@@ -3,13 +3,18 @@ import { Ionicons } from "@expo/vector-icons";
 
 export type WeatherIconName = keyof typeof Ionicons.glyphMap;
 
-export function getWeatherIcon(weatherCode: number): {
+export function getWeatherIcon(weatherCode: number | undefined | null): {
   name: WeatherIconName;
   color: string;
 } {
+  // Sécurité si weatherCode est undefined
+  if (weatherCode == null) {
+    return { name: "partly-sunny-outline", color: "#94A3B8" };
+  }
+
   // Clear
   if (weatherCode === 0) {
-    return { name: "sunny", color: "#F59E0B" }; // Soleil
+    return { name: "sunny", color: "#F59E0B" };
   }
 
   // Mainly clear / partly cloudy
@@ -24,12 +29,12 @@ export function getWeatherIcon(weatherCode: number): {
 
   // Fog
   if (weatherCode === 45 || weatherCode === 48) {
-    return { name: "cloudy", color: "#CBD5E1" };
+    return { name: "cloud", color: "#CBD5E1" };
   }
 
   // Drizzle
   if (weatherCode >= 51 && weatherCode <= 57) {
-    return { name: "rainy", color: "#60A5FA" };
+    return { name: "rainy-outline", color: "#60A5FA" };
   }
 
   // Rain
@@ -49,7 +54,7 @@ export function getWeatherIcon(weatherCode: number): {
 
   // Snow showers
   if (weatherCode >= 85 && weatherCode <= 86) {
-    return { name: "snow", color: "#BFDBFE" };
+    return { name: "snow-outline", color: "#BFDBFE" };
   }
 
   // Thunderstorm
@@ -58,5 +63,5 @@ export function getWeatherIcon(weatherCode: number): {
   }
 
   // Fallback
-  return { name: "partly-sunny", color: "#94A3B8" };
+  return { name: "partly-sunny-outline", color: "#94A3B8" };
 }
